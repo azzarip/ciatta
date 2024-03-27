@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "extrudion"
-version = "2.1.2"
-description = "Analyzes TRA files for stress and strain"
+name = "ciatta"
+version = "1.0.0"
+description = "Analyzes CSV files for stress and strain"
 authors = ["Paride Azzari <paride21azzari@gmail.com>"]
 readme = "README.md"
 license = "MIT"

@@ -14,7 +14,7 @@ class TRAFolder:
         if not os.path.exists(folder_path + '/plots'):
             os.makedirs(folder_path + '/plots') 
     
-    def analyze(self, options = {}):
+    def analyze(self):
         if not self.file_list:
             return
 
@@ -22,8 +22,8 @@ class TRAFolder:
         
         for file in self.file_list:
             print(file)
-            result = TRAFile(file, self.folder_path).analyze(options)
-            result['File'] = self.pad_numeric_part(file)
+            result = TRAFile(file, self.folder_path).analyze()
+            result['File'] = file
 
             self.results = pd.concat([self.results, result])
             
@@ -37,13 +37,17 @@ class TRAFolder:
             dir_list = os.listdir(self.folder_path)
             
             try:
-                file_list = [filename for filename in dir_list if filename.endswith('.TRA')]
+                file_list = [filename for filename in dir_list if filename.endswith('.csv')]
 
                 if not file_list:
-                    print('No .TRA files found in the folder.')
+                    print('No .csv files found in the folder.')
                     return []
                 else:
+                    if 'Analysis.csv' in file_list:
+                        file_list.remove('Analysis.csv')
                     return file_list
+                
+                
             
             except FileNotFoundError:
                 print('An error occurred while filtering files.')
@@ -51,28 +55,14 @@ class TRAFolder:
             
         except FileNotFoundError:
             raise TRAFolder.FolderNotFound('Folder not found') 
-        
-    def pad_numeric_part(self, filename):
-        parts = filename.split('_')
-        if len(parts) != 2:
-            return filename
-        prefix, numeric_part = parts
-        try:
-            numeric_part = int(numeric_part.split('.')[0]) 
-            padded_numeric_part = '{:04d}'.format(numeric_part)  
-            return '{}_{}.{}'.format(prefix, padded_numeric_part, filename.split('.')[-1])
-        except ValueError:
-            return filename
-        
+                
         
     def printCopyrights(self):
-        print("*********************************************")
-        print("                EXTRUDION")
         print("*********************************************")
         print()
         print("by Paride Azzari (C) 2024")
         print()
-        print("info on: github.com/azzarip/extrudion")
+        print("info on: github.com/azzarip/ciatta")
         print("*********************************************")
         print("RESULTS:")
         print()
@@ -88,34 +78,27 @@ class TRAFile:
     def __init__(self, file: str, folder_path: str):
         import os
         import pandas as pd
-        self.filename = file.replace('.TRA', '')
+        self.filename = file.replace('.csv', '')
         
         if folder_path:
             self.filepath = os.path.join(folder_path, file)
         else:
             self.filepath = file
             
-            
-        df = pd.read_table(self.filepath, header = [3], encoding = 'ANSI', sep = ',')
-        df['mm'] = df['mm'].apply(replace_negative_values)
-        self.data = df
+        self.data = self.read_csv(self.filepath)
          
-    def analyze(self, options):
-        from .analyzers import StressStrain      
+    def analyze(self):
         from .fit import Fit
         from .plot import Plot
         
-        data = StressStrain(self.data, sample_area=options['sample_area'], initial_length=options['initial_length'])
+        fit = Fit(self.data)
+        Plot(fit.results, fit.data, self.filename)
         
-        fit = Fit(data)
-        if "plot" not in options or options["plot"] is not False:
-            Plot(fit, data, self.filename)
         return fit.results
     
-def replace_negative_values(x):
-    if x >= 0:
-        return x
-    if abs(x) < 0.01:
-        return 0
-    else:
-        raise ValueError("Negative values in column 'mm'")    
+    def read_csv(self, filename):
+        import pandas as pd
+        df = pd.read_csv(filename, encoding='utf-16', skiprows=9, sep='\t')
+        df = df.rename(columns={list(df)[1]: 'index', list(df)[0]: 'drop', list(df)[2]: 'strain', list(df)[3]: 'stress', list(df)[4]: 'force', list(df)[5]: 'speed'})
+        df = df.drop(columns=['drop']).set_index('index')
+        return df
