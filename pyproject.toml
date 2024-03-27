@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ciatta"
-version = "1.0.0"
+version = "1.0.1"
 description = "Analyzes CSV files for stress and strain"
 authors = ["Paride Azzari <paride21azzari@gmail.com>"]
 readme = "README.md"
@@ -9,6 +9,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
 pandas = "^2.1.1"
+scipy="^1.12.0"
 numpy = "^1.26.0"
 matplotlib = "^3.8.0"
 fsspec = "^2023.9.1"
