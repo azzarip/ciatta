@@ -8,7 +8,7 @@ if %errorlevel% neq 0 (
     curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe -o miniconda.exe
     start /wait "" miniconda.exe /InstallationType=JustMe /RegisterPython=1 /AddToPath=1 /S
     del miniconda.exe
-) else (
+)
 echo Loading Python...
 pip install --upgrade pip >nul
 pip show ciatta > nul 2>&1
@@ -27,4 +27,3 @@ echo Analyzing Files...
 python -c "import ciatta; ciatta.start()"
 echo Finished! 
 pause
-)
