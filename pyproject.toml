@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ciatta"
-version = "1.1.1"
+version = "1.1.2"
 description = "Analyzes CSV files for stress and strain"
 authors = ["Paride Azzari <paride21azzari@gmail.com>"]
 readme = "README.md"

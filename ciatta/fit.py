@@ -7,7 +7,7 @@ class Fit:
         self.cutOffData()
         self.max_stress_index = self.data['stress'].idxmax()
 
-        self.fit_step = 0.09
+        self.fit_step = 0.04
         self.step_fraction = 5
 
         self.fit_results = self.get_fits()
@@ -19,7 +19,21 @@ class Fit:
 
         maxValues = self.data.iloc[self.max_stress_index]
 
-        best_result = self.fit_results.loc[self.fit_results['error'].idxmin()]
+        df = self.fit_results
+
+        df['good'] = 1 / df['error']
+        good = df['good']
+        mean_good = good.mean()
+        df.loc[df['good'] < mean_good, 'good'] = 0
+
+        df['group'] = (df['good'] != 0).astype(
+            int).cumsum() * (df['good'] != 0)
+        results = df[df['good'] != 0].groupby(
+            'group')['good'].max().reset_index(drop=True)
+
+        best_result = df[df['good'] == results.iloc[0]]
+
+        # best_result = self.fit_results.loc[self.fit_results['error'].idxmin()]
 
         return pd.DataFrame({
             'Max Stress [Pa]': [maxValues['stress']],
@@ -53,7 +67,7 @@ class Fit:
             'slope': [slope],
             'intercept': [intercept],
             'p_value': [p_value],
-            'error': [error.pow(2).sum()]
+            'error': [error.pow(2).sum() / len(x)]
         })
         return result
 

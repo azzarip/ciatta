@@ -91,12 +91,13 @@ class TRAFile:
 
         fit = Fit(self.data)
 
-        import matplotlib.pyplot as plt
-        y = 1/fit.fit_results['error']
-        plt.plot(fit.fit_results['x'], y)
-        plt.axhline(y=y.mean(), color='green', linestyle='--')
-        plt.savefig('plots/error' + self.filename + '.png')
-        plt.close()
+        # import matplotlib.pyplot as plt
+        # y = 1/fit.fit_results['error']
+        # plt.plot(fit.fit_results['x'], y)
+        # plt.axhline(y=y.mean(), color='green', linestyle='--')
+        # plt.savefig('plots/error' + self.filename + '.png')
+        # plt.title(self.filename)
+        # plt.close()
 
         Plot(fit.results, fit.data, self.filename)
 
