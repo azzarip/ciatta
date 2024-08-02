@@ -33,15 +33,13 @@ class Fit:
 
         best_result = df[df['good'] == results.iloc[0]]
 
-        # best_result = self.fit_results.loc[self.fit_results['error'].idxmin()]
-
         return pd.DataFrame({
             'Max Stress [Pa]': [maxValues['stress']],
             'Max Strain': [maxValues['strain']],
             'Max Force [N]': [maxValues['force']],
-            'Young Modulus [Pa]': [best_result['slope']],
-            'Intercept [Pa]': [best_result['intercept']],
-            'pValue': [best_result['p_value']]
+            'Young Modulus [Pa]': [best_result['slope'].iloc[0]],
+            'Intercept [Pa]': [best_result['intercept'].iloc[0]],
+            'pValue': [best_result['p_value'].iloc[0]]
         })
 
     def cutOffData(self):
