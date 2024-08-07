@@ -1,11 +1,13 @@
 class Plot:
     from .fit import Fit
 
-    def __init__(self, fit, data, filename: str):
-        self.fit_results = fit
-        self.data = data
+    def __init__(self, fit, filename: str):
+        self.fit = fit
+        self.fit_results = fit.results
+        self.data = fit.data
         self.filename = filename
         self.plot()
+        self.plotError()
 
     def plot(self):
         import matplotlib.pyplot as plt
@@ -22,6 +24,16 @@ class Plot:
         plt.close()
         # plt.draw()
         # plt.pause(0.2)
+
+    def plotError(self):
+        import matplotlib.pyplot as plt
+
+        y = 1/self.fit.fit_results['error']
+        plt.plot(self.fit.fit_results['x'], y)
+        plt.axhline(y=y.mean(), color='green', linestyle='--')
+        plt.savefig('plots/error_' + self.filename + '.png')
+        plt.title(self.filename)
+        plt.close()
 
     def plotBestFit(self):
         import matplotlib.pyplot as plt
